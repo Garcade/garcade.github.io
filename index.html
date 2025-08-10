@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GArcade</title>
+
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Garcade - Google Cloud Arcade Project</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Montserrat:wght@800&display=swap" rel="stylesheet">
+  <style>
+.logo-container {
+            position: absolute;
+            top: 15px; /* Space from top */
+            left: 15px; /* Space from left */
+            z-index: 1000; /* Keep it above everything */
+        }
+
+        .logo-container img {
+            height: 92px; /* Adjust logo height */
+            width: auto; /* Maintain aspect ratio */
+            border-radius: 10px; /* Optional: rounded corners */
+            box-shadow: 0 0 15px #00ff99; /* Neon green glow */
+        }
+
+
+.page-content {
+    padding-top: 550px; /* Pushes text down so it doesn’t touch logo */
+}
+
+
+     body {
+  background-color: black !important;
+}
+
+    :root {
+      --green-light: #22c55e;
+      --green-dark: #166534;
+      --green-emerald: #34d399;
+      --green-neon: #50fa7b;
+      --bg-black: #000;
+      --card-black: #111a13;
+      --white: #fff;
+      --shadow-black: rgba(0, 0, 0, 0.7);
+    }
+
+    body {
+      background: var(--bg-black);
+      color: var(--white);
+      margin: 0;
+      font-family: 'Roboto', Arial, sans-serif;
+      padding: 0;
+    }
+
+    .banner {
+  width: 100%;
+  background-color: black !important; /* 🔥 Set black background */
+  padding: 32px 5% 40px 5%;
+  box-sizing: border-box;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  box-shadow: none; /* Optional: remove green glow */
+  animation: slideInDown 1.2s cubic-bezier(.32,.72,.31,.85);
+}
+
+
+    /* Updated main heading style as per garcade.in */
+    .banner h1 {
+      margin: 0;
+      font-size: 3.5rem;
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 900;
+      color: var(--green-light); /* solid premium green */
+      text-transform: uppercase;
+      letter-spacing: 0.1px;
+      background: none; /* remove gradient background */
+      -webkit-background-clip: unset;
+      -webkit-text-fill-color: unset;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.3); /* subtle shadow for crispness */
+    }
+
+    .banner .cta-btn {
+      margin-top: 24px;
+      padding: 16px 48px;
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: var(--white);
+      background: linear-gradient(90deg, var(--green-light) 50%, var(--green-neon) 95%);
+      border: none;
+      border-radius: 32px;
+      cursor: pointer;
+      box-shadow: 0 8px 32px var(--green-light);
+      transition: transform 0.2s, box-shadow 0.2s;
+      text-shadow: 0 1px 10px var(--green-neon);
+      letter-spacing: 1px;
+    }
+    .banner .cta-btn:hover, .banner .cta-btn:focus {
+      background: linear-gradient(70deg, var(--green-neon) 25%, var(--green-dark) 100%);
+      transform: scale(1.05);
+      outline: 2px solid var(--green-dark);
+      box-shadow: 0 12px 40px var(--green-neon), 0 2px 12px var(--green-dark);
+    }
+
+    .container {
+      max-width: 1080px;
+      margin: 24px auto;
+      padding: 0 2vw;
+      transition: box-shadow 0.2s;
+    }
+
+    h2, h3 {
+      margin-top: 2.2em;
+      margin-bottom: 0.6em;
+      font-weight: 700;
+      font-size: 2rem;
+      background: linear-gradient(to right, var(--green-light), var(--green-dark));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-family: 'Montserrat', Arial, sans-serif;
+      letter-spacing: 0.5px;
+    }
+
+    .card {
+      background: var(--card-black);
+      border-radius: 16px;
+      box-shadow: 0 4px 32px var(--shadow-black), 0 1.5px 10px var(--green-dark);
+      margin-bottom: 32px;
+      padding: 32px 28px 24px 28px;
+      position: relative;
+      overflow: hidden;
+      transition: box-shadow 0.16s, transform 0.16s;
+    }
+    .card:hover {
+      box-shadow: 0 10px 56px var(--green-light), 0 3px 20px var(--green-dark);
+      transform: translateY(-4px) scale(1.013);
+    }
+    .icon {
+      font-size: 2.6rem;
+      color: var(--green-neon);
+      filter: drop-shadow(0 2px 12px var(--green-emerald));
+      margin-bottom: 16px;
+    }
+
+    p, ul {
+      font-size: 1.18rem;
+      color: var(--white);
+      line-height: 1.7;
+      margin-bottom: 0.8em;
+      text-shadow: none;
+    }
+
+    a {
+      color: var(--green-light);
+      font-weight: 600;
+      border-bottom: 2.5px solid var(--green-neon);
+      padding-bottom: 2px;
+      transition: color 0.18s, border 0.22s;
+      text-decoration: none;
+    }
+    a:hover, a:focus {
+      color: var(--green-neon);
+      border-bottom: 2.5px solid var(--green-dark);
+    }
+
+    .benefits-list {
+      list-style-type: '⭐ ';
+      padding-left: 1.2em;
+    }
+    .perks-list {
+      list-style-type: '🎁 ';
+    }
+    .section {
+      margin-top: 32px;
+      margin-bottom: 32px;
+    }
+
+    .divider {
+      border: 0;
+      border-top: 2px solid var(--green-dark);
+      margin-top: 56px;
+      margin-bottom: 56px;
+      width: 60%;
+      margin-left: auto;
+      margin-right: auto;
+      opacity: 0.5;
+    }
+    @media (max-width: 700px) {
+      .banner h1 {font-size: 2rem;}
+      .banner .cta-btn {padding: 12px 26px; font-size:1rem;}
+      .container {padding: 0 0.5vw;}
+      .card {padding: 18px 7vw;}
+      h2, h3 {font-size: 1.13rem;}
+    }
+  </style>
+</head>
+<body>
+  <div class="logo-container">
+    <img src="GArcade Logo on Emerald Silk.png" alt="GArcade Logo">
+</div>
+
+  <section class="banner"style="background-color: black;">
+    <img src="doom-banner.png" alt="Join GArcade" style="width: 100%;" display: block;" />
+  </section>
+  <!-- Navigation Links -->
+<nav style="text-align: center; margin: 37px 0;">
+  <a href="index.html" style="color: white; margin: 0 37px; text-decoration: none; font-weight: bold;">Home</a>
+  <a href="join.html" style="color: white; margin: 0 37px; text-decoration: none; font-weight: bold;">Join</a>
+  <a href="about.html" style="color: white; margin: 0 37px; text-decoration: none; font-weight: bold;">About</a>
+  <a href="challenges.html" style="color: white; margin: 0 37px; text-decoration: none; font-weight: bold;">Challenges</a>
+  <a href="guide.html" style="color: white; margin: 0 37px; text-decoration: none; font-weight: bold;">Guides</a>
+
+</nav>
+
+
+  <div class="banner">
+    <h1 style="background-color: black; padding: 10px;">Garcade: Google Cloud Arcade Adventure</h1>
+    <button class="cta-btn" onclick="window.open('https://go.cloudskillsboost.google/arcade','_blank')" aria-label="Launch Google Arcade!">🚀 Start Learning Now</button>
+  </div>
+
+  <div class="container">
+
+    <div class="card section">
+      <div class="icon" aria-hidden="true">🎮</div>
+      <h2>About Google Arcade</h2>
+      <p>
+        <b>Google Arcade</b> is a <i>world-class gamified cloud learning experience</i> from Google, where you build real cloud knowledge, complete hands-on <b>challenges</b>, and collect badges, <span style="color:var(--green-neon);font-weight:700;">prizes</span>, and even Google swag! Monthly games, from absolute beginner to expert, cover BigQuery, AI, Firebase, Kubernetes, and more.
+      </p>
+      <p>
+        Compete, collaborate, and have fun — all while earning digital credentials visible on your Google Developer Profile. Every challenge is an opportunity to <span style="color:var(--green-neon);font-weight:600;">level up</span> your career!
+      </p>
+      <p>
+        <a href="https://go.cloudskillsboost.google/arcade" target="_blank" rel="noopener noreferrer">View Google Arcade Official Site</a>
+      </p>
+    </div>
+
+    <div class="card section">
+      <div class="icon" aria-hidden="true">⛅</div>
+      <h2>About Google Cloud Skills Boost</h2>
+      <p>
+        <b>Cloud Skills Boost</b> powers the Arcade: <b>free, hands-on</b> training with live cloud sandboxes, skill badges, and a unique learning path for everyone.
+      </p>
+      <ul class="benefits-list">
+        <li>Earn stackable badges for real skills</li>
+        <li>On-demand cloud labs and certification prep</li>
+        <li>Learn by building, not just watching</li>
+        <li>Friendly global learning community</li>
+      </ul>
+      <p>
+        <a href="https://cloudskillsboost.google" target="_blank" rel="noopener noreferrer">Explore Cloud Skills Boost</a>
+      </p>
+    </div>
+
+    <div class="card section">
+      <div class="icon" aria-hidden="true">🤝</div>
+      <h2>Arcade Facilitator Program</h2>
+      <p>
+        Join the <b>Facilitator Program</b>: a <b>zero-cost</b>, always-on campaign supporting <b>all levels</b> of learners. Grow your technical prowess, build cloud skills, and lead a new wave of cloud innovators nationwide!
+      </p>
+      <ul class="benefits-list">
+        <li><b>When:</b> August 4, 2025 - October 6, 2025 (Cohort 2)</li>
+        <li><b>How:</b> 100% Online, Flexible and Self-paced</li>
+        <li><b>What:</b> Free digital badges, recognition, Arcade points and <span style="color: var(--green-neon);">swag</span></li>
+      </ul>
+      <p><a href="https://rsvp.withgoogle.com/events/arcade-facilitator/home" target="_blank" rel="noopener noreferrer">Join Facilitator Program - RSVP</a></p>
+    </div>
+
+    <hr class="divider"/>
+
+    <div class="card section">
+      <div class="icon" aria-hidden="true">🌟</div>
+      <h2>Why Should You Join?</h2>
+      <ul class="benefits-list">
+        <li><b>Premium Prizes & Swag:</b> Backpacks, T-shirts, mugs, and more when you reach top scores</li>
+        <li><b>Future-proof Skills:</b> Cloud, AI, ML, DevOps, and more in practice labs</li>
+        <li><b>Global Recognition:</b> Shareable digital badges on your social profiles</li>
+        <li><b>Career Boost:</b> In-demand skills for outstanding tech job prospects</li>
+        <li><b>Fun, Competitive Learning:</b> Monthly themed events and challenges</li>
+        <li><b>Completely Free:</b> No fees, no limits — just pure skill-building fun</li>
+      </ul>
+      <h3>For Students & Professionals</h3>
+      <ul class="perks-list">
+        <li>Stand out at hackathons, placements, and interviews</li>
+        <li>Build your portfolio with real-world, completed labs</li>
+        <li>Be recognized as a Google Arcade Leader</li>
+      </ul>
+    </div>
+
+    <div class="card section" style="text-align:center; background: linear-gradient(90deg, #14532d 15%, #111a13 85%);">
+      <h2>Ready to Start?</h2>
+      <p>
+        <button class="cta-btn" onclick="window.open('https://go.cloudskillsboost.google/arcade','_blank')" aria-label="Start Google Arcade">🚀 Play Google Arcade Now!</button>
+      </p>
+      <p>
+        <span style="margin-right:1em">🌐</span>
+        <a href="https://go.cloudskillsboost.google/arcade" target="_blank" rel="noopener noreferrer">Google Arcade</a>
+        <span style="margin-left:1em">|</span>
+        <a href="https://cloudskillsboost.google" target="_blank" rel="noopener noreferrer">Cloud Skills Boost</a>
+        <span style="margin-left:1em">|</span>
+        <a href="https://rsvp.withgoogle.com/events/arcade-facilitator/home" target="_blank" rel="noopener noreferrer">Facilitator Program</a>
+      </p>
+    </div>
+  </div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const speak = () => {
+      const message = new SpeechSynthesisUtterance(
+        "Welcome to Garcade. It is a platform designed by Mister Aditya Mathur. Google Cloud Skills is a bridge that connects you directly to the ever growing tech industry. Master Google Cloud Platform with our comprehensive guides for skill badges. Find step-by-step instructions, expert tips, common mistakes to avoid, and best practices to help you earn badges and advance your cloud career. So my dear friend, what are you waiting for? Join Google Arcade and explore the unexplored."
+      );
+      message.voice = speechSynthesis.getVoices().find(v => v.name.includes("Female")) || null;
+      message.rate = 1;
+      message.pitch = 1.1;
+      speechSynthesis.speak(message);
+    };
+
+    document.body.addEventListener("click", () => {
+      speak();
+    }, { once: true });
+  });
+</script>
+<footer style="text-align: center; margin-top: 30px; padding: 15px; font-size: 1.2em; color: #00ff99; font-family: Arial, sans-serif;">
+    ❤️ Designed by <strong>Aditya Mathur</strong> with passion & love for Google Arcade 🌟💻🚀
+</footer>
+
+
+</body>
+</html>
