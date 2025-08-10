@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GArcade | Guides</title>
+  <style>
+    body {
+      margin: 0;
+      background-color: #010b0a;
+      color: #e8f7ef;
+      font-family: 'Segoe UI', sans-serif;
+    }
+    nav {
+      display: flex;
+      gap: 2rem;
+      padding: 1rem;
+      background: #021209;
+      justify-content: center;
+      border-bottom: 2px solid #1bd16a;
+    }
+    nav a {
+      color: #e8f7ef;
+      text-decoration: none;
+      position: relative;
+    }
+    nav a:hover::after {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: #1bd16a;
+      transition: width 0.3s;
+    }
+    header {
+      text-align: center;
+      margin: 2rem auto;
+      max-width: 900px;
+    }
+    header h1 {
+      font-size: 2.5rem;
+      color: #1bd16a;
+      text-shadow: 0 0 12px #1bd16a;
+    }
+    .intro p {
+      font-size: 1.1rem;
+      line-height: 1.6;
+    }
+    .filter-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin: 2rem auto;
+    }
+    .filter-buttons button {
+      background: #021209;
+      color: #1bd16a;
+      border: 1px solid #1bd16a;
+      padding: 0.6rem 1.2rem;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .filter-buttons button:hover,
+    .filter-buttons button.active {
+      background: #1bd16a;
+      color: #010b0a;
+    }
+    .guide-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      padding: 1rem 2rem 3rem;
+      max-width: 1200px;
+      margin: auto;
+    }
+    .card {
+      background: #021209;
+      padding: 1.2rem;
+      border: 1px solid #1bd16a;
+      border-radius: 8px;
+      transition: transform 0.2s, box-shadow 0.2s;
+      cursor: pointer;
+    }
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 6px 20px rgba(27, 209, 106, 0.4);
+    }
+    .card h3 {
+      color: #1bd16a;
+      margin-bottom: 0.4rem;
+    }
+    .card .meta {
+      font-style: italic;
+      font-size: 0.9rem;
+      color: #b7f7d4;
+    }
+    .card .tags {
+      margin-top: 0.3rem;
+      font-size: 0.9rem;
+      color: #8af1b3;
+    }
+    footer {
+      text-align: center;
+      padding: 1.5rem;
+      color: #8af1b3;
+      border-top: 1px solid #1bd16a;
+      margin-top: 2rem;
+    }
+    @media(max-width: 600px){
+      header h1 { font-size: 2rem; }
+      .filter-buttons { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="testindex.html">Home</a>
+    <a href="guide.html">Guides</a>
+    <a href="join.html">Join</a>
+    <a href="about.html">About</a>
+    <a href="challenges.html">Challenges</a>
+  </nav>
+
+  <header>
+    <h1>Google Cloud Skill Badge Guides</h1>
+    <div class="intro">
+      <p>Master Google Cloud Platform with our comprehensive guides for skill badges. Find step-by-step instructions, expert tips, common mistakes to avoid, and best practices to help you earn badges and advance your cloud career.</p>
+    </div>
+  </header>
+
+  <div class="filter-buttons">
+    <button class="filter-btn active" data-filter="all">All</button>
+    <button class="filter-btn" data-filter="arcade">Arcade</button>
+    <button class="filter-btn" data-filter="facilitator">Facilitator</button>
+    <button class="filter-btn" data-filter="swag">Swag</button>
+    <button class="filter-btn" data-filter="tips">Tips</button>
+  </div>
+
+  <div class="guide-grid">
+    <!-- Arcade Card -->
+    <div class="card" data-category="arcade">
+      <h3>Get Started with Google Workspace Tools</h3>
+      <p class="meta">Introductory • 3 hours 45 minutes • 0 Credits</p>
+      <p class="tags">Calendar · Google Meet · Google Cloud Services</p>
+    </div>
+
+    <div class="card" data-category="arcade">
+      <h3>Get Started with Pub/Sub</h3>
+      <p class="meta">Introductory • 2 hours 15 minutes • 2 Credits</p>
+      <p class="tags">Pub/Sub · Data Management · Data Ingestion</p>
+    </div>
+
+    <div class="card" data-category="arcade">
+      <h3>Build Real World AI Applications with Gemini and Imagen</h3>
+      <p class="meta">No Cost • 1 hour 15 minutes • 0 Credits</p>
+      <p class="tags">Gemini · Deep Learning · Image Generation</p>
+    </div>
+
+    <!-- Facilitator Program Card (placeholder text) -->
+    <div class="card" data-category="facilitator">
+      <h3>Arcade Facilitator Program</h3>
+      <p class="meta">Learn to lead cohorts • No Cost</p>
+      <p class="tags">Facilitator · Enrollment · Swag</p>
+    </div>
+
+    <!-- Swag Card (placeholder) -->
+    <div class="card" data-category="swag">
+      <h3>Exclusive Swag Packs</h3>
+      <p class="meta">Earn as you progress</p>
+      <p class="tags">Backpacks · T-Shirts · Prizes</p>
+    </div>
+
+    <!-- Tips Card (placeholder) -->
+    <div class="card" data-category="tips">
+      <h3>Tips & Best Practices</h3>
+      <p class="meta">Optimize your learning</p>
+      <p class="tags">Strategies · Shortcuts · Expert Advice</p>
+    </div>
+  </div>
+
+  <footer>
+    © 2025 GArcade — All rights reserved
+  </footer>
+
+  <script>
+    const buttons = document.querySelectorAll('.filter-btn');
+    const cards = document.querySelectorAll('.card');
+
+    buttons.forEach(btn =>
+      btn.addEventListener('click', () => {
+        buttons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const filter = btn.getAttribute('data-filter');
+        cards.forEach(c => {
+          c.style.display = (filter === 'all' || c.getAttribute('data-category') === filter) ? '' : 'none';
+        });
+      })
+    );
+  </script>
+
+</body>
+</html>

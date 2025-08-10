@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Join GArcade — Cinematic Cutscene with Lightning & Sound</title>
+<style>
+  :root{
+    --bg:#000;
+    --neon-1:#00ff88;
+    --neon-2:#19d17b;
+    --muted:#cfeee0;
+  }
+  html,body{height:100%;margin:0;background:var(--bg);color:#fff;font-family:Inter,system-ui,Segoe UI,Roboto,Arial;}
+  .page{position:relative;min-height:100vh;overflow:hidden}
+  /* Starfield layers */
+  .stars {
+    position:absolute;inset:0;z-index:0;pointer-events:none;
+    background:
+      radial-gradient(circle at 10% 20%, rgba(255,255,255,0.95) 1px, transparent 1px),
+      radial-gradient(circle at 60% 70%, rgba(255,255,255,0.9) 1px, transparent 1px),
+      radial-gradient(circle at 30% 40%, rgba(255,255,255,0.8) 1px, transparent 1px);
+    background-size: 6px 6px, 8px 8px, 5px 5px;
+    opacity:0.12;
+    filter: blur(0.6px);
+    animation: drift 160s linear infinite;
+  }
+  @keyframes drift{from{background-position:0 0,0 0,0 0}to{background-position:-2000px -900px,-1000px 1300px,800px -1400px}}
+  /* twinkling additional stars (span elements) */
+  .twinkles {position:absolute;inset:0;z-index:1;pointer-events:none}
+  .twinkles span{position:absolute;width:2px;height:2px;border-radius:50%;background:#fff;filter:drop-shadow(0 0 6px rgba(0,255,136,0.8));opacity:0;animation:twinkle linear infinite}
+  @keyframes twinkle {0%{opacity:0.02;transform:scale(0.8)}50%{opacity:1;transform:scale(1.2)}100%{opacity:0.02;transform:scale(0.8)}}
+
+  /* Nav (simple) */
+  nav{position:relative;z-index:40;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;max-width:1200px;margin:0 auto}
+  .brand{font-weight:900;font-size:1.2rem;background:linear-gradient(90deg,var(--neon-1),var(--neon-2));-webkit-background-clip:text;color:transparent}
+  nav a{color:#fff;text-decoration:none;padding:8px 12px;border-radius:999px;font-weight:700;opacity:0.9}
+  nav a:hover{filter:brightness(1.06)}
+
+  /* Cinematic stage */
+  .stage{position:relative;z-index:10;min-height:72vh;display:flex;align-items:center;justify-content:center;overflow:visible}
+
+  /* Portal */
+  .portal{
+    position:absolute;width:520px;height:520px;border-radius:50%;left:50%;top:30%;transform:translate(-50%,-30%) scale(0.7);
+    background:
+      radial-gradient(circle at 40% 30%, rgba(0,255,136,0.18) 0%, rgba(0,255,136,0.06) 20%, transparent 48%),
+      conic-gradient(from 0deg at 50% 50%, rgba(0,255,136,0.07), rgba(0,0,0,0.02));
+    box-shadow: 0 0 180px rgba(0,255,136,0.05), inset 0 0 60px rgba(0,255,136,0.03);
+    opacity:0;z-index:20;pointer-events:none;filter:blur(0.6px);
+  }
+  .portal.rings::before{content:"";position:absolute;inset:6%;border-radius:50%;border:2px solid rgba(0,255,136,0.06);mix-blend-mode:screen}
+  .portal-glow{filter:drop-shadow(0 0 80px rgba(0,255,136,0.2));}
+
+  /* Doom figure (stylized SVG container) */
+  .doom {
+    position:relative; width:300px; height:480px; transform-origin:center bottom; left:50%; top:36%;
+    transform:translate(-50%,14vh) scale(0.6) rotateX(6deg); opacity:0; z-index:30; pointer-events:none;
+    transition: transform 700ms cubic-bezier(.2,.9,.2,1), opacity 600ms;
+    filter: drop-shadow(0 28px 40px rgba(0,0,0,0.9)) saturate(1.1);
+  }
+
+  /* mist under doom */
+  .mist {
+    position:absolute;left:50%;bottom:6%;transform:translateX(-50%);width:640px;height:160px;border-radius:50%;
+    background:radial-gradient(ellipse at center, rgba(0,255,136,0.12) 0%, rgba(0,255,136,0.03) 40%, transparent 70%);
+    filter: blur(12px);opacity:0;z-index:18;pointer-events:none;
+  }
+
+  /* ships */
+  .ship {
+    position:absolute;top:14%;left:-18%;width:140px;height:46px;border-radius:28px;background:linear-gradient(90deg,#0aff9b,#007a2a);
+    box-shadow:0 8px 40px rgba(0,255,136,0.12);z-index:12;opacity:0.92;transform:rotate(-4deg)
+  }
+  .ship .trail{position:absolute;right:-260px;top:50%;height:6px;width:260px;background:linear-gradient(90deg,rgba(0,255,136,0.45),rgba(0,255,136,0.02));filter:blur(10px)}
+  .s2{top:30%;left:110%;transform:rotate(8deg)}
+  .s3{top:6%;left:-28%;transform:rotate(2deg)}
+
+  /* lightning container (SVG) */
+  .lightning-layer{position:absolute;inset:0;z-index:35;pointer-events:none;mix-blend-mode:screen;opacity:1}
+
+  /* UI shown after cutscene */
+  .join-ui{position:relative;z-index:50;max-width:980px;margin:0 auto;padding:22px;text-align:center;opacity:0;transform:translateY(20px)}
+  .join-ui .panel{background:linear-gradient(180deg,rgba(6,10,6,0.95),rgba(4,6,4,0.85));border:1px solid rgba(0,255,136,0.06);padding:26px;border-radius:14px;box-shadow:0 32px 80px rgba(0,0,0,0.75)}
+  .join-ui h1{margin:0;color:var(--neon-1);font-size:28px}
+  .join-ui p{color:var(--muted);margin:10px 0 18px}
+
+  .cta{display:inline-block;padding:12px 20px;border-radius:999px;font-weight:800;background:linear-gradient(90deg,var(--neon-1),var(--neon-2));color:#001;text-decoration:none;margin:8px}
+  .cta.outline{background:transparent;border:1px solid rgba(0,255,136,0.08);color:var(--neon-1)}
+
+  /* small screen adjustments */
+  @media (max-width:720px){
+    .portal{width:380px;height:380px;top:24%}
+    .doom{width:200px;height:360px}
+  }
+
+  /* subtle animation for active lightning stroke */
+  .bolt { stroke: #7fe6ff; stroke-width:2.4; stroke-linecap:round; stroke-linejoin:round; opacity:0; filter: url(#boltBlur) drop-shadow(0 0 16px rgba(125,220,255,0.7)); }
+</style>
+</head>
+<body>
+<div class="page" id="page">
+  <div class="stars" aria-hidden="true"></div>
+  <div class="twinkles" id="twinkles" aria-hidden="true"></div>
+
+  <nav>
+    <div class="brand">GArcade</div>
+    <div>
+      <a href="testindex.html">Home</a>
+      <a href="about.html">About</a>
+      <a href="join.html">Join</a>
+      <a href="challenges.html">Challenges</a>
+      <a href="guide.html">Guides</a>
+    </div>
+  </nav>
+
+  <main class="stage" role="main" aria-label="Cinematic stage">
+    <!-- ships -->
+    <div class="ship s1" id="ship1"><div class="trail"></div></div>
+    <div class="ship s2" id="ship2"><div class="trail"></div></div>
+    <div class="ship s3" id="ship3"><div class="trail"></div></div>
+
+    <!-- portal -->
+    <div class="portal" id="portal" aria-hidden="true"></div>
+
+    <!-- mist -->
+    <div class="mist" id="mist" aria-hidden="true"></div>
+
+    <!-- Doom stylized SVG -->
+    <div class="doom" id="doom" aria-hidden="true" role="img" aria-label="Dramatic figure">
+      <svg viewBox="0 0 300 480" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" role="presentation" preserveAspectRatio="xMidYMid meet">
+        <defs>
+          <linearGradient id="cloakG" x1="0" x2="1" y1="0" y2="1">
+            <stop offset="0" stop-color="#020a04"/>
+            <stop offset="1" stop-color="#07100a"/>
+          </linearGradient>
+          <radialGradient id="doomGlow" cx="50%" cy="18%" r="60%">
+            <stop offset="0" stop-color="#00d184" stop-opacity="0.7"/>
+            <stop offset="1" stop-color="#00d184" stop-opacity="0"/>
+          </radialGradient>
+          <filter id="boltBlur" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur stdDeviation="3" result="b"/>
+            <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        </defs>
+
+        <!-- cloak -->
+        <path d="M150 12 C 178 30, 240 70, 238 140 C 235 250, 200 360, 150 420 C 100 360, 60 250, 62 140 C 64 70, 122 30, 150 12 Z"
+          fill="url(#cloakG)" stroke="rgba(4,40,18,0.12)" stroke-width="1.6"/>
+        <!-- hood shadow -->
+        <ellipse cx="150" cy="116" rx="50" ry="36" fill="#000" opacity="0.25"/>
+        <!-- face mask -->
+        <path d="M122 128 C 136 105, 164 105, 178 128 C 190 152, 164 190, 150 190 C 136 190, 110 152, 122 128 Z"
+              fill="#07120b" stroke="#04240a" stroke-width="1.2"/>
+        <!-- eyes -->
+        <rect x="136" y="144" width="12" height="6" rx="2" fill="#00f6ff" opacity="0.95"/>
+        <rect x="156" y="144" width="12" height="6" rx="2" fill="#00f6ff" opacity="0.95"/>
+        <!-- chest emblem glow -->
+        <circle cx="150" cy="260" r="42" fill="url(#doomGlow)" opacity="0.5" />
+      </svg>
+    </div>
+
+    <!-- SVG lightning layer -->
+    <svg class="lightning-layer" id="lightningSVG" viewBox="0 0 1200 800" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <defs>
+        <filter id="fGlow" x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur stdDeviation="6" result="b"/>
+          <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+      </defs>
+      <!-- multiple bolt paths, we'll animate them with JS -->
+      <path id="bolt1" class="bolt" d="M100 10 L140 120 L110 210 L180 300" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" filter="url(#fGlow)"/>
+      <path id="bolt2" class="bolt" d="M900 40 L830 130 L880 210 L760 340" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" filter="url(#fGlow)"/>
+      <path id="bolt3" class="bolt" d="M420 60 L460 160 L430 250 L510 360" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" filter="url(#fGlow)"/>
+      <path id="bolt4" class="bolt" d="M650 20 L690 130 L650 240 L720 330" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" filter="url(#fGlow)"/>
+    </svg>
+  </main>
+
+  <!-- Join UI (hidden until scene end) -->
+  <section class="join-ui" id="joinUI" aria-hidden="true">
+    <div class="panel">
+      <h1>Join GArcade — Your Gateway to Mastering Google Cloud</h1>
+      <p>Arcade-style hands-on challenges, facilitator cohorts, skill badges and prizes. Start building practical cloud skills today.</p>
+      <a class="cta" href="https://go.cloudskillsboost.google/arcade" target="_blank" rel="noopener">Start Arcade</a>
+      <a class="cta outline" href="https://rsvp.withgoogle.com/events/arcade-facilitator/home" target="_blank" rel="noopener">Facilitator Program</a>
+    </div>
+  </section>
+</div>
+
+<script>
+/* ---------- helper: random utilities ---------- */
+const rand = (a,b)=> a + Math.random()*(b-a);
+
+/* ---------- generate twinkling stars ---------- */
+const twinkles = document.getElementById('twinkles');
+for(let i=0;i<80;i++){
+  const s = document.createElement('span');
+  s.style.left = Math.random()*100 + '%';
+  s.style.top  = Math.random()*100 + '%';
+  const size = Math.random()*2+1;
+  s.style.width = s.style.height = size + 'px';
+  s.style.animationDuration = rand(1.6,3.6).toFixed(2) + 's';
+  s.style.animationDelay = rand(0,4).toFixed(2) + 's';
+  s.style.opacity = 0;
+  twinkles.appendChild(s);
+}
+
+/* ---------- ships animation (CSS Keyframe fallback simulated) ---------- */
+const ship1 = document.getElementById('ship1');
+const ship2 = document.getElementById('ship2');
+const ship3 = document.getElementById('ship3');
+
+function animateShip(el, fromX, toX, duration, delay=0, reverse=false){
+  el.style.transition = 'none';
+  el.style.transform = '';
+  el.style.opacity = 1;
+  // use web animation API for smoothness
+  el.animate([
+    { transform: `translateX(${fromX}vw)` },
+    { transform: `translateX(${toX}vw)` }
+  ], { duration: duration, iterations: Infinity, delay: delay, easing: 'linear' });
+}
+// start ships
+animateShip(ship1, 0, 140, 26000, 0);
+animateShip(ship2, 0, -140, 30000, 2400);
+animateShip(ship3, 0, 160, 23000, 900);
+
+/* ---------- cutscene sequence for portal + doom ---------- */
+const portal = document.getElementById('portal');
+const doom = document.getElementById('doom');
+const mist = document.getElementById('mist');
+const joinUI = document.getElementById('joinUI');
+const lightningSVG = document.getElementById('lightningSVG');
+const boltEls = Array.from(lightningSVG.querySelectorAll('.bolt'));
+
+/* show portal with gentle pulse */
+function showPortal(){
+  portal.style.opacity = 1;
+  portal.classList.add('portal-glow');
+  portal.animate([
+    { transform: 'translate(-50%,-30%) scale(0.7)', opacity:0 },
+    { transform: 'translate(-50%,-30%) scale(1)', opacity:1 }
+  ], { duration: 1200, easing: 'cubic-bezier(.2,.9,.2,1)', fill:'forwards'});
+  mist.animate([{opacity:0},{opacity:1}],{duration:900,fill:'forwards'});
+}
+
+/* Doom entrance: scale + translate to center stage */
+function doomEnter(){
+  doom.style.opacity = 1;
+  doom.style.transform = 'translate(-50%,6vh) scale(0.96) rotateX(0deg)';
+  doom.animate([
+    { transform: 'translate(-50%,14vh) scale(0.6) rotateX(6deg)', opacity:0.0 },
+    { transform: 'translate(-50%,6vh) scale(1.02) rotateX(0deg)', opacity:1 }
+  ], { duration: 1600, easing: 'cubic-bezier(.2,.9,.2,1)', fill:'forwards' });
+}
+
+/* Doom exit */
+function doomExit(){
+  doom.animate([
+    { transform: 'translate(-50%,6vh) scale(1)', opacity:1 },
+    { transform: 'translate(-50%,120vh) scale(0.4)', opacity:0 }
+  ], { duration: 900, easing: 'cubic-bezier(.2,.9,.2,1)', fill:'forwards' });
+  portal.animate([{ transform: 'translate(-50%,-30%) scale(1)', opacity:1 },{ transform:'translate(-50%,-30%) scale(0.6)', opacity:0 }],{ duration:900, fill:'forwards' });
+  mist.animate([{opacity:1},{opacity:0}],{duration:900,fill:'forwards'});
+}
+
+/* ---------- lightning & thunder SFX ---------- */
+
+/* WebAudio thunder: synthetic "thunder" using filtered noise + low rumble + short crack */
+let audioCtx = null;
+function initAudio(){
+  if(audioCtx) return;
+  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+}
+
+/* generate short thunder sound; intensity controls low-rumble volume */
+function playThunder(intensity=1){
+  try{
+    initAudio();
+    const ctx = audioCtx;
+    // noise buffer
+    const bufferSize = ctx.sampleRate * 1.6; // 1.6s
+    const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for(let i=0;i<bufferSize;i++){
+      data[i] = (Math.random()*2-1) * (1 - i/bufferSize) * (0.6*intensity);
+    }
+    const noise = ctx.createBufferSource();
+    noise.buffer = buffer;
+
+    // low frequency rumble osc
+    const osc = ctx.createOscillator();
+    osc.type = 'sine';
+    osc.frequency.value = 60 * (0.7 + Math.random()*0.6);
+
+    // filter to make it thunder-ish
+    const lowpass = ctx.createBiquadFilter();
+    lowpass.type = 'lowpass';
+    lowpass.frequency.value = 240;
+
+    const highpass = ctx.createBiquadFilter();
+    highpass.type = 'highpass';
+    highpass.frequency.value = 30;
+
+    // gain nodes for envelope
+    const noiseGain = ctx.createGain();
+    const oscGain = ctx.createGain();
+
+    // connect
+    noise.connect(lowpass);
+    lowpass.connect(highpass);
+    highpass.connect(noiseGain);
+    osc.connect(oscGain);
+
+    // merge
+    const merger = ctx.createGain();
+    noiseGain.connect(merger);
+    oscGain.connect(merger);
+
+    // final gain
+    const finalGain = ctx.createGain();
+    merger.connect(finalGain);
+    finalGain.connect(ctx.destination);
+
+    // envelope
+    const now = ctx.currentTime;
+    finalGain.gain.setValueAtTime(0, now);
+    finalGain.gain.linearRampToValueAtTime(0.9*intensity, now + 0.02);
+    finalGain.gain.exponentialRampToValueAtTime(0.0001, now + 1.6 + Math.random()*0.8);
+
+    oscGain.gain.setValueAtTime(0, now);
+    oscGain.gain.linearRampToValueAtTime(0.5*intensity, now + 0.03);
+    oscGain.gain.exponentialRampToValueAtTime(0.0001, now + 1.6 + Math.random()*0.8);
+
+    noise.start(now);
+    osc.start(now);
+
+    // stop nodes later
+    noise.stop(now + 1.9);
+    osc.stop(now + 1.9);
+  } catch(e){
+    // audio may be blocked — ignore silently
+    // console.warn('Audio failed', e);
+  }
+}
+
+/* animate a bolt element (stroke drawing & glow) */
+function triggerBolt(boltEl, duration=420, delay=0){
+  boltEl.style.opacity = 1;
+  boltEl.style.stroke = '#bceeff';
+  boltEl.style.filter = 'drop-shadow(0 0 20px rgba(125,220,255,0.9))';
+  // get path length for dash animation
+  const len = boltEl.getTotalLength ? boltEl.getTotalLength() : 300;
+  boltEl.style.strokeDasharray = len;
+  boltEl.style.strokeDashoffset = len;
+  boltEl.getBoundingClientRect(); // reflow
+  boltEl.animate([
+    { strokeDashoffset: len, opacity: 1, transform: 'translateY(0px)' },
+    { strokeDashoffset: Math.floor(len*0.12), opacity: 1 },
+    { strokeDashoffset: 0, opacity: 1 },
+    { strokeDashoffset: -Math.floor(len*0.2), opacity: 0.06 }
+  ], { duration: duration, easing: 'cubic-bezier(.2,.6,.2,1)', delay: delay, fill:'forwards' });
+
+  // slight flicker glow
+  boltEl.animate([{ filter:'drop-shadow(0 0 36px rgba(125,220,255,0.95))' }, { filter:'drop-shadow(0 0 8px rgba(125,220,255,0.55))' }], { duration: duration/2, iterations:2 });
+
+  // sound synced
+  setTimeout(()=>playThunder(rand(0.6,1.2)), delay + 60);
+}
+
+/* randomly trigger bolts with different timings/positions */
+function randomLightningLoop(){
+  const bolts = boltEls;
+  // choose 1-2 bolts at random
+  const count = Math.random() > 0.65 ? 2 : 1;
+  for(let i=0;i<count;i++){
+    const b = bolts[Math.floor(Math.random()*bolts.length)];
+    // small random transform to reposition bolt slightly
+    const dx = rand(-120,120);
+    const dy = rand(-40,60);
+    b.style.transform = `translate(${dx}px, ${dy}px)`;
+    triggerBolt(b, rand(340,700)|0, 0);
+  }
+  // schedule next event randomly 900ms - 4200ms
+  setTimeout(randomLightningLoop, rand(900,4200)|0);
+}
+
+/* ---------- main cinematic flow ---------- */
+async function sleep(ms){ return new Promise(r=>setTimeout(r,ms)); }
+
+async function playCinematic(){
+  // brief hint flash
+  await sleep(400);
+  // show portal
+  showPortal();
+  // small thunder + flash
+  setTimeout(()=>{ randomLightningLoop(); }, 450); // fire 1 lightning early
+
+  // after portal grown, doom enters
+  await sleep(1000);
+  doomEnter();
+  // audible thunder at entrance
+  setTimeout(()=>playThunder(1.1), 600);
+  // hold dramatic pose
+  await sleep(2000);
+
+  // more lightning bursts while doom is present
+  randomLightningLoop();
+  await sleep(900);
+
+  // exit doom
+  doomExit();
+  await sleep(1100);
+
+  // reveal join UI
+  joinUI.style.opacity = 0;
+  joinUI.style.display = 'block';
+  joinUI.animate([{opacity:0, transform:'translateY(14px)'},{opacity:1, transform:'translateY(0)'}], { duration: 700, fill:'forwards', easing:'cubic-bezier(.2,.9,.2,1)'});
+  joinUI.setAttribute('aria-hidden','false');
+}
+
+/* prepare user gesture to allow audio on some browsers */
+function ensureAudioOnFirstUserGesture(){
+  function onFirstInteraction(){
+    initAudio();
+    document.removeEventListener('click', onFirstInteraction);
+    document.removeEventListener('keydown', onFirstInteraction);
+  }
+  document.addEventListener('click', onFirstInteraction);
+  document.addEventListener('keydown', onFirstInteraction);
+}
+
+/* ---------- start everything after DOM ready ---------- */
+window.addEventListener('DOMContentLoaded', ()=>{
+  ensureAudioOnFirstUserGesture();
+  // make twinkling stars visible delays are in CSS animation
+  setTimeout(()=>document.querySelectorAll('.twinkles span').forEach(s=>s.style.opacity=1),200);
+
+  // start cinematic after short wait
+  setTimeout(()=>{ playCinematic(); }, 900);
+  // also keep lightning looping in background later (less frequent)
+  setTimeout(()=>randomLightningLoop(), 2800);
+});
+</script>
+</body>
+</html>
+		
